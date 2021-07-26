@@ -1,4 +1,4 @@
-from lisp_eval import leval, if_, define
+from comma_lisp import leval, if_, define
 
 def test_leval():
     assert leval((1,)) == 1
