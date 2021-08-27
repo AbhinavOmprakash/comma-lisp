@@ -1,14 +1,14 @@
-from comma_lisp import leval, if_, define
+from comma_lisp import eval_, if_, define
 
 def test_leval():
-    assert leval((1,)) == 1
-    assert leval((1,2,3)) == [1,2,3]
+    assert eval_((1,)) == 1
+    assert eval_((1,2,3)) == [1,2,3]
 
     add = lambda a,b: a+b
-    assert leval((add,1,2)) == 3
-    assert leval((add,(add, 1,2), 2)) == 5
-    assert leval((add,(add, 1,2), (add, 1,2))) == 6
-    assert leval(
+    assert eval_((add,1,2)) == 3
+    assert eval_((add,(add, 1,2), 2)) == 5
+    assert eval_((add,(add, 1,2), (add, 1,2))) == 6
+    assert eval_(
             (add,
                 (add, 
                     (add,1,2),3), 
@@ -17,12 +17,12 @@ def test_leval():
 
     sub = lambda a,b: a-b
 
-    plambda = lambda a,b, op: leval( (if_, op=="add",(add, a,b), (lambda a,b:a*b, a,b)) )
+    plambda = lambda a,b, op: eval_( (if_, op=="add",(add, a,b), (lambda a,b:a*b, a,b)) )
     
     assert plambda(1,2,"add") == 3
     assert plambda(1,2,"sub") == 2
 
 
 def test_define():
-    leval((define, "test",lambda x:x))
+    eval_((define, "test",lambda x:x))
     assert test(0) ==0

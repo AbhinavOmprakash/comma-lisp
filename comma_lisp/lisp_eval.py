@@ -13,17 +13,17 @@ def is_special(fn):
 def eval_if(expr):
     print('in if')
     #only ifs.
-    if leval(second(expr)): #test clause
-        return leval(third(expr)) # then clause
+    if eval_(second(expr)): #test clause
+        return eval_(third(expr)) # then clause
     else:
-        return leval(fourth(expr)) # else clause
+        return eval_(fourth(expr)) # else clause
 
 def eval_define(expr):
     print('defining')
     name = second(expr)
     args = third(expr)
     body = fourth(expr)
-    f = f"""def {name}({args}):return leval({body})"""
+    f = f"""def {name}({args}):return eval_({body})"""
     # exec(f"global {name}")
     exec(f)
     exec(f"globals()['{name}']={name}")
@@ -41,7 +41,7 @@ def eval_let(expr):
         else:
             exec(f"{args[i]}={bindings[i]}")
 
-    return eval(f"leval({body})")
+    return eval(f"eval_({body})")
 
 
 
@@ -58,19 +58,19 @@ def define():
 def let():
     pass
 
-def leval(expr):
+def eval_(expr):
     if is_atom(expr):
         return expr
     elif len(expr)==1: # if expr is iterable
         return first(expr)
     elif not is_fn(first(expr)):
         #return the values as a list
-        return [leval(e) for e in expr]
+        return [eval_(e) for e in expr]
     elif is_special(first(expr)):
         return special_eval(expr)
     else:
         #return the result of calling the function and passing the args
-        return first(expr)(*[leval(e) for e in rest(expr)])
+        return first(expr)(*[eval_(e) for e in rest(expr)])
 
 
 def if_(bool_expr: bool, then_expr: Any, else_expr: Any = None):
@@ -86,9 +86,9 @@ def if_(bool_expr: bool, then_expr: Any, else_expr: Any = None):
     """
 
     if bool_expr:
-        return leval(then_expr)
+        return eval_(then_expr)
     else:
-        return leval(else_expr)
+        return eval_(else_expr)
 
 if __name__=="__main__":
     def infix(l, o, r):
@@ -106,18 +106,18 @@ if __name__=="__main__":
         return f(*args)
 
     exp = (
-        leval((infix, 1, add, 2))
+        eval_((infix, 1, add, 2))
     )
-    print(leval(exp))
+    print(eval_(exp))
 
     # exp2 = (
     #     (apply, reverse, (infix, 1, minus, 2))
     # )
-    # print(leval(exp2))
+    # print(eval_(exp2))
     # def mult(a,b):
     #     return a*b
 
-    # fact = lambda x: leval(
+    # fact = lambda x: eval_(
     #                         (if_, x==1, 1, (mult, x, 
     #                                               (fact, (minus, x, 1)) ))
     # )
@@ -126,10 +126,10 @@ if __name__=="__main__":
     def add(a,b):
         return a+b
 
-    print(leval((define, "fn", "a,b", "(add, a,b)")))
+    print(eval_((define, "fn", "a,b", "(add, a,b)")))
 
     # def f():
     #     exec("def fn():return 1")
     #     return 2
 
-    leval((let, ["a","b"], [1,2], "(print, a, b)"))
+    eval_((let, ["a","b"], [1,2], "(print, a, b)"))
